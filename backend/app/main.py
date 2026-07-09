@@ -23,7 +23,6 @@ from app.api.trading import router as trading_router
 from app.services.instrument_service import instrument_service
 from app.api.search import router as search_router
 from app.api.live_prediction import router as live_prediction_router
-from app.api.live_prediction import router as live_prediction_router
 from app.api.quote import router as quote_router
 from app.api.chart import router as chart_router
 from app.database.watchlist import create_watchlist_table
