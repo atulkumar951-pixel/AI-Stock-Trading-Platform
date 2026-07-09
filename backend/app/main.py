@@ -1,3 +1,6 @@
+from app.database.database import SessionLocal
+from app.database.models import PredictionHistory
+
 from fastapi import FastAPI
 from app.core.config import settings
 from app.core.logger import logger
@@ -26,6 +29,9 @@ from app.api.live_prediction import router as live_prediction_router
 from app.api.quote import router as quote_router
 from app.api.chart import router as chart_router
 from app.database.watchlist import create_watchlist_table
+from app.services.prediction_service import prediction_service
+from app.utils.instruments import INSTRUMENTS
+
 
 
 app = FastAPI(
@@ -75,6 +81,28 @@ async def startup():
     instrument_service.load()
     create_watchlist_table()
     logger.info("AI Ready")
+
+    # Generate initial predictions
+    db = SessionLocal()
+
+    try:
+        count = db.query(PredictionHistory).count()
+
+        if count == 0:
+
+            logger.info("Generating initial predictions...")
+
+            for instrument_key in INSTRUMENTS.values():
+
+                try:
+                    prediction_service.predict_live(instrument_key)
+                except Exception as e:
+                    logger.error(f"{instrument_key}: {e}")
+
+            logger.info("Initial predictions generated.")
+
+    finally:
+        db.close()
 
 
 @app.get("/")
