@@ -135,11 +135,11 @@ class PredictionService:
             prediction_row = PredictionHistory(
                 symbol=symbol,
                 signal=signal,
-                confidence=confidence,
-                entry_price=round(close, 2),
-                target_price=risk["target"],
-                stop_loss=risk["stop"],
-                expected_return=risk["expected_return"],
+                confidence=float(confidence),
+                entry_price=float(round(close, 2)),
+                target_price=float(risk["target"]),
+                stop_loss=float(risk["stop"]),
+                expected_return=float(risk["expected_return"]),
             )
 
             db.add(prediction_row)
@@ -201,15 +201,10 @@ class PredictionService:
             },
 
             "risk": {
-
-                "target_price": risk["target"],
-
-                "stop_loss": risk["stop"],
-
-                "expected_return": risk["expected_return"],
-
-                "risk_reward": risk["risk_reward"]
-
+                "target_price": float(risk["target"]),
+                "stop_loss": float(risk["stop"]),
+                "expected_return": float(risk["expected_return"]),
+                "risk_reward": float(risk["risk_reward"]),
             }
 
         }
