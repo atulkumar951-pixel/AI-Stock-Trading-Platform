@@ -6,7 +6,6 @@ from app.schemas.watchlist import WatchlistItem
 from app.services.watchlist_service import watchlist_service
 from app.services.market_service import market_service
 from app.services.prediction_service import prediction_service
-from app.utils.instruments import INSTRUMENTS
 
 router = APIRouter(
     prefix="/watchlist",
@@ -24,13 +23,14 @@ def ai_watchlist():
 
     predictions = []
 
-    for symbol, instrument_key in INSTRUMENTS.items():
+    watchlist = watchlist_service.get_all()
+
+    for item in watchlist:
 
         try:
 
             result = prediction_service.predict_live(
-                symbol,
-                instrument_key,
+                item["instrument_key"]
             )
 
             predictions.append(result)
@@ -40,21 +40,21 @@ def ai_watchlist():
             predictions.append({
 
                 "company": {
-                    "symbol": symbol,
+                    "symbol": item["symbol"]
                 },
 
-                "error": str(e),
+                "error": str(e)
 
             })
 
     execution_time = round(
         time.time() - start,
-        2,
+        2
     )
 
     return {
 
-        "total_symbols": len(INSTRUMENTS),
+        "total_symbols": len(watchlist),
 
         "successful_predictions": len(
             [
@@ -74,7 +74,7 @@ def ai_watchlist():
 
         "execution_time_seconds": execution_time,
 
-        "predictions": predictions,
+        "predictions": predictions
 
     }
 
@@ -148,13 +148,19 @@ def live_watchlist():
     result = []
 
     for item in watchlist:
+
         quote = None
 
         for value in quote_data.values():
-            if (value.get("instrument_token") == item["instrument_key"]):
+
+            if value.get("instrument_token") == item["instrument_key"]:
+
                 quote = value
+
                 break
+
         if quote is None:
+
             continue
 
         result.append({
