@@ -58,3 +58,42 @@ class ApiToken(Base):
         DateTime,
         default=datetime.utcnow
     )
+
+
+from sqlalchemy import UniqueConstraint
+
+class Watchlist(Base):
+
+    __tablename__ = "watchlist"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    symbol = Column(
+        String,
+        nullable=False
+    )
+
+    name = Column(
+        String,
+        nullable=False
+    )
+
+    exchange = Column(
+        String,
+        nullable=False
+    )
+
+    instrument_key = Column(
+        String,
+        unique=True,
+        nullable=False
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

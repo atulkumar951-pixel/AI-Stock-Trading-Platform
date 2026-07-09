@@ -28,7 +28,6 @@ from app.api.search import router as search_router
 from app.api.live_prediction import router as live_prediction_router
 from app.api.quote import router as quote_router
 from app.api.chart import router as chart_router
-from app.database.watchlist import create_watchlist_table
 from app.services.prediction_service import prediction_service
 from app.utils.instruments import INSTRUMENTS
 
@@ -79,7 +78,6 @@ async def startup():
 
     model_loader.load()
     instrument_service.load()
-    create_watchlist_table()
     logger.info("AI Ready")
 
     # Generate initial predictions

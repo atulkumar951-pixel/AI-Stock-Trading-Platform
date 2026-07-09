@@ -1,4 +1,7 @@
-from app.database.watchlist import get_connection
+from sqlalchemy.exc import IntegrityError
+
+from app.database.database import SessionLocal
+from app.database.models import Watchlist
 
 
 class WatchlistService:
@@ -9,23 +12,34 @@ class WatchlistService:
 
     def get_all(self):
 
-        conn = get_connection()
+        db = SessionLocal()
 
-        cursor = conn.cursor()
+        try:
 
-        cursor.execute(
-            """
-            SELECT *
-            FROM watchlist
-            ORDER BY created_at DESC
-            """
-        )
+            items = (
+                db.query(Watchlist)
+                .order_by(Watchlist.created_at.desc())
+                .all()
+            )
 
-        rows = cursor.fetchall()
+            return [
 
-        conn.close()
+                {
+                    "id": item.id,
+                    "symbol": item.symbol,
+                    "name": item.name,
+                    "exchange": item.exchange,
+                    "instrument_key": item.instrument_key,
+                    "created_at": item.created_at,
+                }
 
-        return [dict(row) for row in rows]
+                for item in items
+
+            ]
+
+        finally:
+
+            db.close()
 
     # ============================================
     # ADD
@@ -33,39 +47,57 @@ class WatchlistService:
 
     def add(self, item: dict):
 
-        conn = get_connection()
+        db = SessionLocal()
 
-        cursor = conn.cursor()
+        try:
 
-        cursor.execute(
-            """
-            INSERT OR IGNORE INTO watchlist
-            (
-                symbol,
-                name,
-                exchange,
-                instrument_key
+            exists = (
+                db.query(Watchlist)
+                .filter(
+                    Watchlist.instrument_key ==
+                    item["instrument_key"]
+                )
+                .first()
             )
-            VALUES
-            (
-                ?, ?, ?, ?
+
+            if exists:
+
+                return {
+                    "success": True,
+                    "message": "Already exists"
+                }
+
+            row = Watchlist(
+
+                symbol=item["symbol"],
+
+                name=item["name"],
+
+                exchange=item["exchange"],
+
+                instrument_key=item["instrument_key"]
+
             )
-            """,
-            (
-                item["symbol"],
-                item["name"],
-                item["exchange"],
-                item["instrument_key"],
-            ),
-        )
 
-        conn.commit()
+            db.add(row)
 
-        conn.close()
+            db.commit()
 
-        return {
-            "success": True
-        }
+            return {
+                "success": True
+            }
+
+        except IntegrityError:
+
+            db.rollback()
+
+            return {
+                "success": True
+            }
+
+        finally:
+
+            db.close()
 
     # ============================================
     # DELETE
@@ -76,27 +108,32 @@ class WatchlistService:
         instrument_key: str,
     ):
 
-        conn = get_connection()
+        db = SessionLocal()
 
-        cursor = conn.cursor()
+        try:
 
-        cursor.execute(
-            """
-            DELETE FROM watchlist
-            WHERE instrument_key = ?
-            """,
-            (
-                instrument_key,
-            ),
-        )
+            row = (
+                db.query(Watchlist)
+                .filter(
+                    Watchlist.instrument_key ==
+                    instrument_key
+                )
+                .first()
+            )
 
-        conn.commit()
+            if row:
 
-        conn.close()
+                db.delete(row)
 
-        return {
-            "success": True
-        }
+                db.commit()
+
+            return {
+                "success": True
+            }
+
+        finally:
+
+            db.close()
 
     # ============================================
     # EXISTS
@@ -107,26 +144,28 @@ class WatchlistService:
         instrument_key: str,
     ):
 
-        conn = get_connection()
+        db = SessionLocal()
 
-        cursor = conn.cursor()
+        try:
 
-        cursor.execute(
-            """
-            SELECT 1
-            FROM watchlist
-            WHERE instrument_key = ?
-            """,
-            (
-                instrument_key,
-            ),
-        )
+            return (
 
-        row = cursor.fetchone()
+                db.query(Watchlist)
 
-        conn.close()
+                .filter(
+                    Watchlist.instrument_key ==
+                    instrument_key
+                )
 
-        return row is not None
+                .first()
+
+                is not None
+
+            )
+
+        finally:
+
+            db.close()
 
 
 watchlist_service = WatchlistService()
