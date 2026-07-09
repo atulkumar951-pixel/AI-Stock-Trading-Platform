@@ -10,6 +10,10 @@ import {
 
 import { NavLink } from "react-router-dom";
 
+interface SidebarProps {
+    lightMode: boolean;
+}
+
 const menus = [
     {
         title: "Dashboard",
@@ -48,17 +52,23 @@ const menus = [
     },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+    lightMode,
+}: SidebarProps) {
     return (
-        <aside className="w-64 h-screen bg-slate-900 border-r border-slate-800 p-5 sticky top-0 flex-shrink-0 overflow-y-auto">
+        <aside
+            className={`w-64 h-screen sticky top-0 flex-shrink-0 overflow-y-auto p-5 border-r ${
+                lightMode
+                    ? "bg-white border-gray-200 text-gray-900"
+                    : "bg-slate-900 border-slate-800 text-white"
+            }`}
+        >
             <h1 className="text-2xl font-bold mb-10">
                 AI Trader
             </h1>
 
             <nav className="space-y-2">
-
                 {menus.map((menu) => {
-
                     const Icon = menu.icon;
 
                     return (
@@ -68,22 +78,19 @@ export default function Sidebar() {
                             className={({ isActive }) =>
                                 `flex items-center gap-3 rounded-lg px-4 py-3 transition ${
                                     isActive
-                                        ? "bg-blue-600"
-                                        : "hover:bg-slate-800"
+                                        ? "bg-blue-600 text-white"
+                                        : lightMode
+                                        ? "hover:bg-gray-100 text-gray-900"
+                                        : "hover:bg-slate-800 text-white"
                                 }`
                             }
                         >
                             <Icon size={20} />
-
                             <span>{menu.title}</span>
-
                         </NavLink>
                     );
-
                 })}
-
             </nav>
-
         </aside>
     );
 }

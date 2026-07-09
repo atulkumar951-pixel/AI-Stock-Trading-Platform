@@ -1,32 +1,43 @@
 import { Outlet } from "react-router-dom";
+import { useState } from "react";
 
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import Footer from "./Footer";
 
 export default function MainLayout() {
 
+    const [lightMode, setLightMode] = useState(false);
+
     return (
 
-        <div className="flex h-screen overflow-hidden bg-slate-950">
+        <div
+            className={
+                lightMode
+                    ? "flex h-screen bg-gray-100 text-black"
+                    : "flex h-screen bg-slate-950 text-white"
+            }
+        >
 
-            <Sidebar />
+            <Sidebar lightMode={lightMode} />
 
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col">
 
-                <Header />
+                <Header
+                    lightMode={lightMode}
+                    setLightMode={setLightMode}
+                />
 
-                <div className="flex-1 overflow-y-auto">
+                <main
+                    className={
+                        lightMode
+                            ? "flex-1 overflow-auto p-6 bg-gray-100"
+                            : "flex-1 overflow-auto p-6 bg-slate-950"
+                    }
+                >
 
-                    <main className="p-6">
+                    <Outlet />
 
-                        <Outlet />
-
-                    </main>
-
-                    <Footer />
-
-                </div>
+                </main>
 
             </div>
 
