@@ -39,7 +39,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:8000",
         "http://127.0.0.1:5173",
-        "https://ai-stock-trading-platform-seven.vercel.app",
+        "https://ai-stock-trading-platform-yrcw.vercel.app",
+        "https://ai-stock-trading-platform-6a2d-one.vercel.app",
+        "https://*.vercel.app",   
     ],
     allow_credentials=True,
     allow_methods=["*"],
