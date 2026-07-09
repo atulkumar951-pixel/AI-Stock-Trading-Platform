@@ -127,9 +127,13 @@ export default function Dashboard() {
             {/* Latest Prediction */}
             {/* ===================== */}
 
-            <PredictionCard
-                prediction={data.latest_prediction}
-            />
+            {data.latest_prediction ? (
+                <PredictionCard prediction={data.latest_prediction} />
+            ) : (
+                <div className="rounded-xl bg-[#1c2436] border border-slate-700 p-6 text-center text-slate-400">
+                    No prediction available yet.
+                </div>
+            )}
 
             {/* ===================== */}
             {/* AI Widgets */}
@@ -137,18 +141,22 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                <ConfidenceBar
-                    confidence={data.latest_prediction.confidence}
-                />
+                {data.latest_prediction && (
+                    <>
+                        <ConfidenceBar
+                            confidence={data.latest_prediction.confidence}
+                        />
 
-                <SignalGauge
-                    signal={data.latest_prediction.signal}
-                    confidence={data.latest_prediction.confidence}
-                />
+                        <SignalGauge
+                            signal={data.latest_prediction.signal}
+                            confidence={data.latest_prediction.confidence}
+                        />
 
-                <RiskMeter
-                    riskReward={data.latest_prediction.risk_reward}
-                />
+                        <RiskMeter
+                            riskReward={data.latest_prediction.risk_reward}
+                        />
+                    </>
+                )}
 
             </div>
 
@@ -174,9 +182,15 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                <AIRecommendationCard
-                    prediction={data.latest_prediction}
-                />
+                {data.latest_prediction ? (
+                    <AIRecommendationCard
+                        prediction={data.latest_prediction}
+                    />
+                ) : (
+                    <div className="rounded-xl bg-[#1c2436] border border-slate-700 p-6 text-slate-400">
+                        No AI recommendation available.
+                    </div>
+                )}
 
                 <PortfolioSummary
                     predictions={data.summary.total_predictions}
