@@ -1,10 +1,9 @@
-import axios from "axios";
-
-const API = "http://127.0.0.1:8000";
+import api from "./axios";
 
 export async function predictLive(instrumentKey: string) {
-    const response = await axios.post(
-        `${API}/live/predict`,
+
+    const response = await api.post(
+        "/live/predict",
         {
             instrument_key: instrumentKey,
         }

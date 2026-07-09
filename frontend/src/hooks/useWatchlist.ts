@@ -22,6 +22,12 @@ export function useWatchlist() {
 
         queryFn: getWatchlist,
 
+        refetchInterval: 5000,
+
+        staleTime: 0,
+
+        refetchOnWindowFocus: true,
+
     });
 
 }
