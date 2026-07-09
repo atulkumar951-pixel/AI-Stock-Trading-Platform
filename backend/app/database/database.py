@@ -1,21 +1,31 @@
+import os
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from pathlib import Path
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///./trading.db"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-print("Current Working Directory:", Path.cwd())
-print("Database Path:", Path.cwd() / "trading.db")
+if not DATABASE_URL:
+    raise Exception("DATABASE_URL environment variable not found")
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False}
+    pool_pre_ping=True,
 )
 
 SessionLocal = sessionmaker(
-    autoflush=False,
     autocommit=False,
-    bind=engine
+    autoflush=False,
+    bind=engine,
 )
 
 Base = declarative_base()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
