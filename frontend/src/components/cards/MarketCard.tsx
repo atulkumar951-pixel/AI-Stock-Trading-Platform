@@ -44,7 +44,7 @@ export default function MarketCard({
                 }
             >
 
-                {positive ? "▲" : "▼"} {change}
+                {positive ? "▲" : "▼"} {Math.abs(change).toFixed(2)} pts
 
             </p>
 
