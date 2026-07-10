@@ -44,7 +44,7 @@ export default function MarketCard({
                 }
             >
 
-                {positive ? "▲" : "▼"} {change}%
+                {positive ? "▲" : "▼"} {change}
 
             </p>
 
