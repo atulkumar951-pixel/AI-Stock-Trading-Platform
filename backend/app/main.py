@@ -30,6 +30,7 @@ from app.api.quote import router as quote_router
 from app.api.chart import router as chart_router
 from app.services.prediction_service import prediction_service
 from app.utils.instruments import INSTRUMENTS
+from app.api.token_test import router as token_test_router
 
 
 
@@ -68,7 +69,7 @@ app.include_router(search_router)
 app.include_router(live_prediction_router)
 app.include_router(quote_router)
 app.include_router(chart_router)
-
+app.include_router(token_test_router)
 
 
 @app.on_event("startup")
@@ -79,28 +80,6 @@ async def startup():
     model_loader.load()
     instrument_service.load()
     logger.info("AI Ready")
-
-    # Generate initial predictions
-    db = SessionLocal()
-
-    try:
-        count = db.query(PredictionHistory).count()
-
-        if count == 0:
-
-            logger.info("Generating initial predictions...")
-
-            for instrument_key in INSTRUMENTS.values():
-
-                try:
-                    prediction_service.predict_live(instrument_key)
-                except Exception as e:
-                    logger.error(f"{instrument_key}: {e}")
-
-            logger.info("Initial predictions generated.")
-
-    finally:
-        db.close()
 
 
 @app.get("/")
